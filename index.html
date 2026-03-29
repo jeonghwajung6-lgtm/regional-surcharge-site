@@ -84,6 +84,19 @@
     #viewSearch, #viewDetail { display: none; }
     #viewGrid { display: block; }
 
+    /* ─── FAV LIST ─── */
+    .fav-list-wrap { display: none; margin: 16px 16px 0; background: var(--white); border-radius: 14px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); border: 2px solid var(--mint); }
+    .fav-header { font-size: 13px; color: var(--g800); font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .fav-item { display: flex; align-items: center; justify-content: space-between; font-size: 15px; padding: 10px 0; border-bottom: 1px solid var(--g100); }
+    .fav-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .fav-item-left { display: flex; align-items: center; gap: 8px; }
+    .fav-gu { font-size: 11px; background: var(--g100); padding: 3px 6px; border-radius: 6px; color: var(--g600); font-weight: 700; white-space: nowrap; }
+    .fav-name { font-weight: 700; color: var(--g800); word-break: keep-all; }
+    .fav-amt { font-weight: 800; color: var(--mint-dark); white-space: nowrap; flex-shrink: 0; }
+    .fav-btn { font-size: 22px; color: var(--g200); cursor: pointer; background: none; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; transition: transform .15s; margin-left: 8px; }
+    .fav-btn:active { transform: scale(.8); }
+    .fav-btn.active { color: var(--yellow); }
+
     /* ─── GRID VIEW ─── */
     .grid-header {
       padding: 16px 16px 8px;
@@ -109,7 +122,7 @@
       min-height: 96px;
       display: flex; flex-direction: column; justify-content: space-between;
     }
-    .gu-card:active { transform: scale(.97); box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+    .gu-card:active { transform: scale(.97); box-shadow: 0 1px 2px rgba(0,0,0,.1); background-color: var(--mint); }
     .gu-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .gu-card-name { font-size: 18px; font-weight: 900; color: var(--g800); }
     .gu-card-icon { font-size: 20px; }
@@ -231,6 +244,10 @@
 
 <!-- View: Grid -->
 <div id="viewGrid">
+  <div class="fav-list-wrap" id="favListWrap">
+    <div class="fav-header">⭐ 내가 즐겨찾는 장소</div>
+    <div id="favListItems"></div>
+  </div>
   <div class="grid-header">
     <strong>구 선택</strong>으로 할증 지역 확인
   </div>
@@ -293,14 +310,60 @@ function renderLocCard(item, showGu = false) {
   const cls = amtClass(item.amount);
   const note = item.note ? `<span class="tag tag-note">${item.note}</span>` : '';
   const guTag = showGu ? `<span class="tag tag-note">${item.gu}</span>` : '';
+  
+  const isFav = window.favs && window.favs.some(f => f.name === item.name && f.gu === item.gu);
+  const starCls = isFav ? 'fav-btn active' : 'fav-btn';
+  const starIcon = isFav ? '⭐' : '☆';
+
   return `<div class="loc-card">
     <div class="loc-card-left">
       <div class="loc-card-name">${item.name}</div>
       <div class="loc-card-tags">${typeTags(item.type)}${guTag}${note}</div>
     </div>
-    <div class="loc-card-amt ${cls}">${item.amount.toLocaleString()}원</div>
+    <div style="display:flex; align-items:center;">
+      <div class="loc-card-amt ${cls}">${item.amount.toLocaleString()}원</div>
+      <button class="fav-btn ${starCls}" onclick="window.toggleFav('${item.name.replace(/'/g, "\\'")}', '${item.gu}', ${item.amount})">${starIcon}</button>
+    </div>
   </div>`;
 }
+
+// ── FAV LOGIC ──
+window.favs = JSON.parse(localStorage.getItem('favs') || '[]');
+window.toggleFav = function(name, gu, amount) {
+  const idx = window.favs.findIndex(f => f.name === name && f.gu === gu);
+  if (idx > -1) window.favs.splice(idx, 1);
+  else window.favs.push({ name, gu, amount });
+  localStorage.setItem('favs', JSON.stringify(window.favs));
+  
+  // Re-render
+  window.renderFavs();
+  if (document.getElementById('viewDetail').style.display === 'block') {
+    showDetail(document.getElementById('detailTitle').textContent);
+  } else if (document.getElementById('viewSearch').style.display === 'block') {
+    document.getElementById('searchInput').dispatchEvent(new Event('input'));
+  }
+};
+window.renderFavs = function() {
+  const wrap = document.getElementById('favListWrap');
+  const list = document.getElementById('favListItems');
+  if (!wrap || !list) return;
+  if (!window.favs.length) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  list.innerHTML = window.favs.map(f => `
+    <div class="fav-item">
+      <div class="fav-item-left">
+        <span class="fav-gu">${f.gu}</span>
+        <span class="fav-name">${f.name}</span>
+      </div>
+      <div class="fav-amt">${f.amount.toLocaleString()}원</div>
+    </div>
+  `).join('');
+};
+// init favs
+window.renderFavs();
 
 // ── Build Grid ──
 const grid = document.getElementById('guGrid');
