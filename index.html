@@ -275,10 +275,10 @@ function amtClass(amt) {
 }
 
 function amtLabel(amt) {
-  if (amt >= 2000) return '최고 2,000원';
-  if (amt >= 1500) return '최고 1,500원';
-  if (amt >= 1000) return '최고 1,000원';
-  return '최고 500원';
+  if (amt >= 2000) return '최대 2,000원';
+  if (amt >= 1500) return '최대 1,500원';
+  if (amt >= 1000) return '최대 1,000원';
+  return '최대 500원';
 }
 
 function typeTags(type) {
@@ -388,8 +388,9 @@ searchInput.addEventListener('input', () => {
   window.scrollTo({ top: 0, behavior: 'instant' });
 
   const results = [];
+  const normalizedQ = q.toLowerCase().replace(/\s+/g, '');
   Object.values(DATA).forEach(items => items.forEach(item => {
-    if (item.name.toLowerCase().includes(q.toLowerCase())) results.push(item);
+    if (item.name.toLowerCase().replace(/\s+/g, '').includes(normalizedQ)) results.push(item);
   }));
   results.sort((a, b) => b.amount - a.amount);
 
