@@ -58,22 +58,22 @@
     .search-wrap input::placeholder { color: var(--g400); }
     .search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
     .search-x {
-      position: absolute; right: 42px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
       width: 26px; height: 26px; border-radius: 50%;
       background: var(--g200); border: none; cursor: pointer;
       font-size: 12px; color: var(--g600);
       display: none; align-items: center; justify-content: center;
     }
     .voice-btn {
-      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-      width: 30px; height: 30px; border-radius: 50%;
-      background: var(--g100); border: none; cursor: pointer;
-      font-size: 16px; display: flex; align-items: center; justify-content: center;
-      transition: background .2s;
+      width: 100%; height: 46px; border-radius: 14px;
+      background: var(--mint); color: var(--g800);
+      font-size: 15px; font-weight: 800; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-top: 10px; transition: opacity .2s;
     }
-    .voice-btn:active { background: var(--mint-bg); }
+    .voice-btn:active { opacity: .7; }
     .voice-btn.listening {
-      background: var(--mint); animation: pulse 1s infinite;
+      animation: pulse 1s infinite;
     }
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(12,239,211,.5); }
@@ -111,7 +111,7 @@
     }
     .gu-card:active { transform: scale(.97); box-shadow: 0 1px 2px rgba(0,0,0,.1); }
     .gu-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-    .gu-card-name { font-size: 16px; font-weight: 800; color: var(--g800); }
+    .gu-card-name { font-size: 18px; font-weight: 900; color: var(--g800); }
     .gu-card-icon { font-size: 20px; }
     .gu-card-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
     .gu-card-count { font-size: 12px; color: var(--g400); }
@@ -225,8 +225,8 @@
     <span class="search-ico">🔍</span>
     <input id="searchInput" type="text" placeholder="장소명 검색 (예: 코엑스, 타워팰리스)" autocomplete="off" autocorrect="off">
     <button class="search-x" id="searchX">✕</button>
-    <button class="voice-btn" id="voiceBtn" title="음성 검색">🎙️</button>
   </div>
+  <button class="voice-btn" id="voiceBtn">🎙️ 음성으로 찾기</button>
 </div>
 
 <!-- View: Grid -->
@@ -425,15 +425,15 @@ if (!SpeechRecognition) {
     searchInput.value = text;
     searchInput.dispatchEvent(new Event('input'));
     voiceBtn.classList.remove('listening');
-    voiceBtn.textContent = '🎙️';
+    voiceBtn.textContent = '🎙️ 음성으로 찾기';
   };
   recog.onerror = () => {
     voiceBtn.classList.remove('listening');
-    voiceBtn.textContent = '🎙️';
+    voiceBtn.textContent = '🎙️ 음성으로 찾기';
   };
   recog.onend = () => {
     voiceBtn.classList.remove('listening');
-    voiceBtn.textContent = '🎙️';
+    voiceBtn.textContent = '🎙️ 음성으로 찾기';
   };
 
   voiceBtn.addEventListener('click', () => {
@@ -443,7 +443,7 @@ if (!SpeechRecognition) {
       searchInput.value = '';
       searchInput.placeholder = '말씀해주세요...';
       voiceBtn.classList.add('listening');
-      voiceBtn.textContent = '⏹️';
+      voiceBtn.textContent = '⏹️ 듣는 중...';
       recog.start();
       setTimeout(() => { searchInput.placeholder = '장소명 검색 (예: 코엑스, 타워팰리스)'; }, 3000);
     }
