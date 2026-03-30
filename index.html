@@ -122,7 +122,7 @@
       min-height: 96px;
       display: flex; flex-direction: column; justify-content: space-between;
     }
-    .gu-card:active, .gu-card.clicked { transform: scale(.97); box-shadow: 0 1px 2px rgba(0,0,0,.1); background-color: var(--mint); }
+    .gu-card:active { transform: scale(.97); box-shadow: 0 1px 2px rgba(0,0,0,.1); background-color: var(--mint); }
     .gu-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .gu-card-name { font-size: 18px; font-weight: 900; color: var(--g800); }
     .gu-card-icon { font-size: 20px; }
@@ -143,7 +143,7 @@
       transform: scaleX(0); transform-origin: left;
       transition: transform .2s;
     }
-    .gu-card:active::after, .gu-card.clicked::after { transform: scaleX(1); }
+    .gu-card:active::after { transform: scaleX(1); }
 
     /* ─── DETAIL VIEW ─── */
     .detail-top {
@@ -385,13 +385,7 @@ Object.keys(DATA).forEach(gu => {
       <div class="gu-card-count">${items.length}개 위치</div>
       <div class="gu-max-badge ${cls}">${amtLabel(maxAmt)}</div>
     </div>`;
-  card.addEventListener('click', () => {
-    card.classList.add('clicked');
-    setTimeout(() => {
-      showDetail(gu);
-      card.classList.remove('clicked');
-    }, 150);
-  });
+  card.addEventListener('click', () => showDetail(gu));
   grid.appendChild(card);
 });
 
