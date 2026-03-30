@@ -358,7 +358,10 @@ window.renderFavs = function() {
         <span class="fav-gu">${f.gu}</span>
         <span class="fav-name">${f.name}</span>
       </div>
-      <div class="fav-amt">${f.amount.toLocaleString()}원</div>
+      <div style="display:flex; align-items:center;">
+        <div class="fav-amt">${f.amount.toLocaleString()}원</div>
+        <button class="fav-btn active" onclick="window.toggleFav('${f.name.replace(/'/g, "\\'")}', '${f.gu}', ${f.amount})">⭐</button>
+      </div>
     </div>
   `).join('');
 };
